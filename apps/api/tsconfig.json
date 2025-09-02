@@ -18,8 +18,8 @@
 
     // Other Outputs
     "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false,
+    "declarationMap": false,
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -47,5 +47,7 @@
     "moduleResolution": "nodenext",
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "prisma/**/*"]
 }

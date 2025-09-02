@@ -1,5 +1,7 @@
 "use client"
 import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { API_BASE_URL } from '@/lib/api'
 
 export default function UploadPage() {
@@ -33,8 +35,23 @@ export default function UploadPage() {
       </form>
       {result && (
         <div className="mt-8">
-          <h2 className="font-medium">Resultado</h2>
-          <pre className="mt-2 bg-gray-50 p-3 rounded border text-sm overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+          <h2 className="font-semibold">Detectado</h2>
+          <div className="text-sm text-gray-600">Marca: {result.detected?.brand ?? '—'} {result.detected?.name ? `• ${result.detected.name}` : ''}</div>
+          <h3 className="mt-4 font-semibold">Possíveis correspondências</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-3">
+            {result.matches?.map((p: any) => (
+              <Link key={p.id} href={`/product/${p.id}`} className="border rounded-lg overflow-hidden hover:shadow">
+                <div className="relative aspect-square bg-gray-100">
+                  {p.imageUrl ? <Image src={p.imageUrl} alt={p.name} fill className="object-cover" /> : null}
+                </div>
+                <div className="p-3">
+                  <div className="text-sm text-gray-500">{p.brand}</div>
+                  <div className="font-medium">{p.name}</div>
+                  <div className="text-rose-700 font-semibold mt-1">R$ {Number(p.price).toFixed(2)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </main>

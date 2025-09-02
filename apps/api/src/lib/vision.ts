@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 
 type VisionResult = {
-  brand?: string
-  name?: string
-  confidence?: number
+  brand?: string | undefined
+  name?: string | undefined
+  confidence?: number | undefined
 }
 
 function guessFromFilename(pathOrName: string): VisionResult | null {
@@ -56,11 +56,11 @@ export async function identifyPerfumeFromImage(
     const json = (await res.json()) as any
     const logo = json?.responses?.[0]?.logoAnnotations?.[0]
     if (logo?.description) {
-      return { brand: logo.description, confidence: logo.score ?? 0.6 }
+      return { brand: logo.description as string, confidence: (logo.score as number | undefined) ?? 0.6 }
     }
-    return filenameGuess ?? { brand: undefined, confidence: 0 }
+    return filenameGuess ?? { brand: undefined, name: undefined, confidence: 0 }
   } catch (err) {
-    return filenameGuess ?? { brand: undefined, confidence: 0 }
+    return filenameGuess ?? { brand: undefined, name: undefined, confidence: 0 }
   }
 }
 

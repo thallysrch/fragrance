@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { AddToCartButton } from '@/components/AddToCartButton'
+import { Reviews } from './Reviews'
 import { fetchJson } from '@/lib/api'
 
 type Perfume = {
@@ -66,6 +67,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           ))}
         </div>
       </section>
+      <Reviews perfumeId={perfume.id} />
     </main>
   )
 }

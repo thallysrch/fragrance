@@ -1,0 +1,1 @@
+{"version":3,"file":"vision.d.ts","sourceRoot":"","sources":["../../src/lib/vision.ts"],"names":[],"mappings":"AAEA,KAAK,YAAY,GAAG;IAClB,KAAK,CAAC,EAAE,MAAM,CAAA;IACd,IAAI,CAAC,EAAE,MAAM,CAAA;IACb,UAAU,CAAC,EAAE,MAAM,CAAA;CACpB,CAAA;AAmBD,wBAAsB,wBAAwB,CAC5C,IAAI,EAAE,OAAO,CAAC,MAAM,CAAC,IAAI,GACxB,OAAO,CAAC,YAAY,CAAC,CAqCvB"}

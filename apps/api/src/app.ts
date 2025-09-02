@@ -3,8 +3,9 @@ import cors from 'cors'
 import morgan from 'morgan'
 import multer from 'multer'
 import { z } from 'zod'
-import prisma from './lib/prisma'
-import { identifyPerfumeFromImage } from './lib/vision'
+import prisma from './lib/prisma.js'
+import { identifyPerfumeFromImage } from './lib/vision.js'
+import { runSeed } from './seed/run.js'
 
 export function createApp() {
   const app = express()
@@ -125,10 +126,21 @@ export function createApp() {
       if (!parsed.success) return res.status(400).json({ error: 'Invalid body' })
       const { perfumeId, rating, comment, user } = parsed.data
       const dbUser = await prisma.user.upsert({ where: { email: user.email }, update: { name: user.name }, create: { name: user.name, email: user.email, passwordHash: 'placeholder', favoriteNotes: [] } })
-      const created = await prisma.review.create({ data: { perfumeId, rating, comment, userId: dbUser.id } })
+      const created = await prisma.review.create({ data: { perfumeId, rating, comment: comment ?? null, userId: dbUser.id } })
       res.json({ id: created.id })
     } catch {
       res.status(500).json({ error: 'Failed to create review' })
+    }
+  })
+
+  app.post('/admin/seed', async (req, res) => {
+    try {
+      const token = req.headers['x-seed-token']
+      if (!process.env.SEED_TOKEN || token !== process.env.SEED_TOKEN) return res.status(401).json({ error: 'unauthorized' })
+      await runSeed(prisma)
+      res.json({ ok: true })
+    } catch {
+      res.status(500).json({ error: 'seed failed' })
     }
   })
 
