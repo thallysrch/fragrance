@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MASCULINO
+  FEMININO
+  UNISSEX
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  favoriteNotes String[]
+  createdAt     DateTime  @default(now())
+
+  reviews Review[]
+  orders  Order[]
+}
+
+model Perfume {
+  id          String     @id @default(cuid())
+  name        String
+  brand       String
+  description String?
+  notes       String[]
+  price       Decimal    @db.Decimal(10, 2)
+  imageUrl    String?
+  gender      Gender
+  durability  Int?
+  createdAt   DateTime   @default(now())
+
+  similarityOriginal   Similarity[] @relation("Original")
+  similarityAlternative Similarity[] @relation("Alternative")
+  reviews              Review[]
+  orderItems           OrderItem[]
+}
+
+model Similarity {
+  id                   String  @id @default(cuid())
+  originalPerfumeId    String
+  alternativePerfumeId String
+  similarityScore      Float
+
+  original    Perfume @relation("Original", fields: [originalPerfumeId], references: [id])
+  alternative Perfume @relation("Alternative", fields: [alternativePerfumeId], references: [id])
+
+  @@unique([originalPerfumeId, alternativePerfumeId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  perfumeId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  perfume Perfume @relation(fields: [perfumeId], references: [id])
+}
+
+model Order {
+  id          String       @id @default(cuid())
+  userId      String
+  totalAmount Decimal      @db.Decimal(10, 2)
+  status      OrderStatus  @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  user  User        @relation(fields: [userId], references: [id])
+  items OrderItem[]
+}
+
+model OrderItem {
+  id         String  @id @default(cuid())
+  orderId    String
+  perfumeId  String
+  quantity   Int
+  unitPrice  Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  perfume Perfume @relation(fields: [perfumeId], references: [id])
+}
